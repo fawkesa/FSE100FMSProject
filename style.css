@@ -1,4 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@100..900&display=swap')
+:root{
+  --bgColor: #808080;
+  --textPrimary: #ffffff;
+  --textSecondary: #000000;
+  --primaryColor: #0066ff;
+}
 html, body {
+  font-family: "Outfit", sans-serif;
+  background-color:var(--bgColor);
+  color: var(--textPrimary);
   margin: 0;
   padding: 0;
 }
