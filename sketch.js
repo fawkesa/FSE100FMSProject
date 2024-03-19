@@ -1,64 +1,99 @@
-//The below code is a set up on dragging points that are circles which will be used in our dragging shapes game number 4 :D
+// Create an array to store square objects
+let squares = [];
 
-//empty array called shapes, holding all the shapes
-//drag point to keep track of with point we have clicked and are dragging at any given time
-const points = [];
-let dragPoint = null;
+// Number of squares
+const numSquares = 6;
 
-//dragRadius is how close you have to be to center of point to actually be able to drag it
-const numPoints = 5;
-const dragRadius = 20;
-
+// Setup function
 function setup() {
-  createCanvas(600, 600);
-  strokeWeight(5);
+  // Create a canvas
+  createCanvas(600, 400);
+
+  // Initialize squares on the left side
+  for (let i = 0; i < numSquares / 2; i++) {
+    squares.push({
+      x: 13, // X-coordinate for left side
+      y: 60 + i * 100, // Y-coordinate changes for each square
+      size: 50, // Size of the square
+      colorShape: "red", // Assigning red color
+      isDragging: false, // Dragging state
+      offsetX: 0, // Offset between mouse position and square position
+      offsetY: 0
+    });
+  }
   
-  //for loop between 0 & num of points defined & for each of them, pushing a random vector into our point arrays. Passing to createVector function a random value between 0 and width for x & b/w 0 & height for y 
-  for(let i = 0; i < numPoints; i++) {
-    points.push(createVector(random(width), random(height)));
+  // Initialize squares on the right side
+  for (let i = 0; i < numSquares / 2; i++) {
+    squares.push({
+      x: width - 63, // X-coordinate for right side
+      y: 60 + i * 100, // Y-coordinate changes for each square
+      size: 50, // Size of the square
+      colorShape: "red", // Assigning red color
+      isDragging: false, // Dragging state
+      offsetX: 0, // Offset between mouse position and square position
+      offsetY: 0
+    });
   }
 }
 
+// Draw function
 function draw() {
+  // Set background color
   background(220);
-  fill(255, 0, 0);
+  // left side lines drawn
+  line(75, 0, 75, 400);
+  line(75, 035, 0, 035);
+  line(75, 135, 0, 135);
+  line(75, 235, 0, 235);
+  line(75, 335, 0, 335);
+  //right side lines 575
+  line(525, 0, 525, 400);
+  line(525, 035, 600, 035);
+  line(525, 135, 600, 135);
+  line(525, 235, 600, 235);
+  line(525, 335, 600, 335);
   
-  //drawing a circle at x and y location that has a diameter that is the radius times 2
-  for(let p of points) {
-    circle(p.x, p.y, dragRadius * 2);
+
+  // Draw squares
+  for (let i = 0; i < squares.length; i++) {
+    let square = squares[i];
+    fill(""+square.colorShape+"");
+    rect(square.x, square.y, square.size, square.size);
   }
 }
 
-//loop through points backwards through array so checking from top down ? | if mouse is in the circle, then bring the point just clicked on to the end of the array so it is brought to the top and stored into dragPoint so we know which point we are dragging
+// Mouse pressed function
 function mousePressed() {
-  for(let i = points.length - 1; i >= 0; i--) {
-    if(mouseInCircle(points[i], dragRadius)){
-      dragPoint = points.splice(i, 1);
-      dragPoint.x = mouseX;
-      dragPoint.y = mouseY;
-      //bring drag point to the front
-      points.push(dragPoint);
-      
-      break;
+  // Check if mouse is pressed over any square
+  for (let i = 0; i < squares.length; i++) {
+    let square = squares[i];
+    if (mouseX >= square.x && mouseX <= square.x + square.size &&
+        mouseY >= square.y && mouseY <= square.y + square.size) {
+      square.isDragging = true;
+      square.offsetX = mouseX - square.x;
+      square.offsetY = mouseY - square.y;
+      square.colorShape = "yellow";
     }
   }
 }
 
-//if drag point assigned, update x and y loc to be where the mouse is being dragged
-function mouseDragged() {
-  if(dragPoint){
-    dragPoint.x = mouseX;
-    dragPoint.y = mouseY;
+// Mouse released function
+function mouseReleased() {
+  // Stop dragging when mouse button is released
+  for (let i = 0; i < squares.length; i++) {
+    squares[i].isDragging = false;
+    squares[i].colorShape = "red";
   }
 }
 
-//once stopped clicking mouse button, stopped dragging it as well
-function mouseReleased() {
-  dragPoint = null;
+// Mouse dragged function
+function mouseDragged() {
+  // Update square positions while dragging
+  for (let i = 0; i < squares.length; i++) {
+    let square = squares[i];
+    if (square.isDragging) {
+      square.x = mouseX - square.offsetX;
+      square.y = mouseY - square.offsetY;
+    }
+  }
 }
-
-//if distance b/w mouse and center of circle is less than radius, means that mouse is inside circle
-function mouseInCircle(pos, radius) {
-  return dist(mouseX, mouseY, pos.x, pos.y) < radius
-}
-
