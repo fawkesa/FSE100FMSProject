@@ -1,5 +1,5 @@
 //The below code is a set up on dragging points that are circles which will be used in our dragging shapes game number 4 :D
- 
+  
 //empty array called shapes, holding all the shapes
 //drag point to keep track of with point we have clicked and are dragging at any given time
 const points = [];
@@ -62,5 +62,3 @@ function mouseInCircle(pos, radius) {
   return dist(mouseX, mouseY, pos.x, pos.y) < radius
 }
  
-//this is a test! 
-//this is another test
