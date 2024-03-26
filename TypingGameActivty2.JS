@@ -22,7 +22,7 @@
     let playing = false;
 
     function setup() {
-      createCanvas(400, 200);
+      createCanvas(600, 400);
       generateWords();
       textSize(32);
       textAlign(CENTER, CENTER);
