@@ -1,0 +1,56 @@
+let currentLetter;
+let nextLetter;
+let progress = 0; // Progress represented as a percentage
+const maxProgress = 100; // Maximum progress
+const lineHeight = 250; // Vertical position of the line
+let lineColor = [0, 0, 0]; // Default line color (black)
+const progressBarHeight = 20; // Height of the progress bar
+
+function setup() {
+  createCanvas(800, 300);
+  textAlign(CENTER, CENTER);
+  textSize(32);
+  nextLetter = randomChar();
+}
+
+function draw() {
+  background(220);
+  text("Type the letter: " + nextLetter, width / 2, height / 3);
+  
+  // Draw the progress line with dynamic color
+  stroke(lineColor[0], lineColor[1], lineColor[2]);
+  strokeWeight(4);
+  line(100, lineHeight, 100 + (progress / maxProgress) * (width - 200), lineHeight);
+  
+  // Draw the progress bar
+  drawProgressBar();
+}
+
+function keyPressed() {
+  currentLetter = key;
+  if (currentLetter.toUpperCase() === nextLetter.toUpperCase()) {
+    // Correct input, make line green, increase progress
+    lineColor = [0, 255, 0]; // Green
+    progress = min(progress + 10, maxProgress); // Increase progress, max out at 100
+    nextLetter = randomChar();
+  } else {
+    // Incorrect input, make line red, decrease progress
+    lineColor = [255, 0, 0]; // Red
+    progress = max(progress - 10, 0); // Decrease progress, min out at 0
+  }
+}
+
+function randomChar() {
+  // Generates a random uppercase letter
+  return String.fromCharCode(int(random(65, 91)));
+}
+
+function drawProgressBar() {
+  noStroke();
+  fill(100); // Dark grey background for the progress bar
+  rect(100, height - progressBarHeight - 10, width - 200, progressBarHeight);
+  
+  fill(0, 255, 0); // Green fill for progress
+  rect(100, height - progressBarHeight - 10, (progress / maxProgress) * (width - 200), progressBarHeight);
+}
+
