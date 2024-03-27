@@ -5,119 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
   <title>Typing Game</title>
+  <style>
+    body {
+      font-family: Calibri, sans-serif;
+      background-color: #222;
+      color: #ddd;
+    }
+  </style>
 </head>
 <body>
   <script>
-    let words = [];
+    let words = ["report", "imprint", "damaged", "arch", "furtive", "joyous", "fulfil", "understand", "imprint", "unnatural", "foregoing", "preside", "shake", "poor", "snail", "square", "guard", "touch", "fluttering", "sweet", "crook", "disappear", "reply", "prickly", "hellish", "desire", "frail", "tell", "innocent", "behavior", "mammoth", "brainy", "afternoon", "enlighten", "number", "gentle", "opt", "swing", "copy", "group", "gusty", "light", "cloud", "love", "uppity", "current", "clocks", "download", "declare", "feel", "light", "sore", "scary", "teach", "fight", "hurt", "use", "expand", "number", "buzz", "ooze", "lame", "sniff", "sock", "nap", "shake", "breathe", "pollute", "approval", "home", "opine", "stride", "large", "hurry", "painful", "hesitant", "dizzy", "scorch", "magical", "harm", "unwieldy", "lavish", "door", "bustling", "silent", "straw", "blow", "stitch", "sincere", "obnoxious", "adjoining", "cake", "office", "wave", "puzzled", "scarce", "stale", "change", "quizzical", "bashful", "exist", "remarkable", "manager", "bereave", "fling", "fork", "grow", "pain", "bizarre", "hot", "recur", "cat", "spy", "shock", "escape", "leaf", "blur", "dinosaur", "visitor", "body", "clever", "nut", "beetle", "shrill", "faint", "stretch", "clumsy", "jagged", "plucky", "concerned", "juvenile", "ablaze", "sudden", "shade", "read", "wicked", "dreary", "passenger", "consecrate", "moan", "voiceless", "pleasant", "paint", "oe", "slimy", "imply", "optimize", "juicy", "overt", "scab", "volleyball", "knowledge", "dip", "typeset", "screw", "whole", "contract", "rest", "attack", "territory", "furry", "curve", "absorbed", "nation", "unsightly", "elbow", "scatter", "act", "wry", "acoustic", "vacation", "parallel", "judge", "own", "yawn", "brick", "stove", "slippery", "afternoon", "flop", "overconfident", "abandoned", "submit", "adaptable", "kick", "activity", "ill-informed", "hobbies", "place", "grab", "consult", "saddle", "holiday", "wish", "popcorn", "idealize", "careless", "healthy", "spicy", "direct"];
+
     let currentWord = "";
+    let currentTyped = "";
     let currentIndex = 0;
-    let input = "";
     let startTime;
     let endTime;
-    let elapsedTime;
+    let timeLeft = 60;
+    let timerInterval;
     let correctCount = 0;
     let wrongCount = 0;
     let typingSpeed = 0;
     let accuracy = 0;
-    let playing = false;
+    let gameOver = false;
 
     function setup() {
-      createCanvas(600, 400);
-      generateWords();
-      textSize(32);
-      textAlign(CENTER, CENTER);
-    }
-
-    function draw() {
-      background(220);
-      if (!playing) {
-        displayStartScreen();
-      } else {
-        displayGameScreen();
-      }
-    }
-
-    function displayStartScreen() {
-      fill(0);
-      text("Press Enter to Start", width / 2, height / 2);
-    }
-
-    function displayGameScreen() {
-      fill(0);
-      text(currentWord, width / 2, height / 2);
-
-      fill(0);
-      text(input, width / 2, height / 2 + 50);
-
-      let timePassed = millis() - startTime;
-      fill(0);
-      text("Time: " + Math.floor(timePassed / 1000), 100, 50);
-
-      fill(0);
-      text("Correct: " + correctCount, 300, 50);
-
-      fill(0);
-      text("Wrong: " + wrongCount, 300, 100);
-
-      fill(0);
-      text("Speed: " + typingSpeed + " WPM", 100, 100);
-
-      fill(0);
-      text("Accuracy: " + accuracy + "%", 100, 150);
-    }
-
-    function generateWords() {
-      for (let i = 0; i < 100; i++) {
-        let length = floor(random(1, 11));
-        let word = "";
-        for (let j = 0; j < length; j++) {
-          word += String.fromCharCode(97 + floor(random(26))); // Random lowercase letter
-        }
-        words.push(word);
-      }
+      createCanvas(windowWidth, windowHeight);
+      textAlign(LEFT, TOP);
+      textSize(24);
+      startGame();
     }
 
     function startGame() {
-      playing = true;
-      currentWord = words[currentIndex];
+      currentWord = random(words);
       startTime = millis();
+      timerInterval = setInterval(updateTimer, 1000);
     }
 
-    function keyPressed() {
-      if (keyCode === ENTER && !playing) {
-        startGame();
-      } else if (playing) {
-        if (keyCode === BACKSPACE) {
-          input = input.slice(0, -1);
-        } else if (keyCode >= 65 && keyCode <= 90) {
-          input += String.fromCharCode(keyCode).toLowerCase();
-        }
+    function draw() {
+      background(34);
+      fill(221);
+      text(currentWord, 20, 50);
+      fill(255);
+      text(currentTyped, 20, 90);
 
-        if (input === currentWord) {
-          correctCount++;
-          currentIndex++;
-          if (currentIndex >= words.length) {
-            endGame();
-          } else {
-            currentWord = words[currentIndex];
-            input = "";
-          }
-        } else if (input.length >= currentWord.length || currentWord.indexOf(input) !== 0) {
-          wrongCount++;
-        }
+      if (!gameOver) {
+        let timeText = "Time: " + timeLeft;
+        fill(255);
+        text(timeText, 20, 20);
+      } else {
+        let stats = "Speed: " + typingSpeed + " WPM | Accuracy: " + accuracy + "%";
+        fill(0, 255, 0);
+        text("Game Over!", width - 200, 20);
+        fill(255);
+        text(stats, width - 200, 50);
+      }
+    }
 
+    function updateTimer() {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        gameOver = true;
         calculateStats();
       }
     }
 
-    function endGame() {
-      playing = false;
-      endTime = millis();
-      elapsedTime = (endTime - startTime) / 1000;
+    function keyPressed() {
+      if (!gameOver) {
+        if (keyCode === BACKSPACE) {
+          currentTyped = currentTyped.slice(0, -1);
+        } else if (keyCode >= 65 && keyCode <= 90 || keyCode === 32) {
+          let typedChar = keyCode === 32 ? " " : String.fromCharCode(keyCode);
+          currentTyped += typedChar;
+        }
+
+        if (currentTyped === currentWord.substring(0, currentTyped.length)) {
+          if (currentTyped.length === currentWord.length) {
+            correctCount++;
+            currentIndex++;
+            if (currentIndex >= words.length) {
+              gameOver = true;
+              calculateStats();
+            } else {
+              currentWord = words[currentIndex];
+              currentTyped = "";
+            }
+          }
+        } else {
+          wrongCount++;
+        }
+      }
     }
 
     function calculateStats() {
       let typedCharacters = correctCount + wrongCount;
+      let elapsedTime = 60 - timeLeft;
       typingSpeed = Math.floor((typedCharacters / elapsedTime) * 60);
       accuracy = Math.floor((correctCount / typedCharacters) * 100);
     }
