@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Game2"
+		},
+		{
+			"path": "../Game3"
+		},
+		{
+			"path": "../Game4"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Game1"
+	}
+}
