@@ -17,7 +17,10 @@
   <script>
     let words = ["report", "imprint", "damaged", "arch", "furtive", "joyous", "fulfil", "understand", "imprint", "unnatural", "foregoing", "preside", "shake", "poor", "snail", "square", "guard", "touch", "fluttering", "sweet", "crook", "disappear", "reply", "prickly", "hellish", "desire", "frail", "tell", "innocent", "behavior", "mammoth", "brainy", "afternoon", "enlighten", "number", "gentle", "opt", "swing", "copy", "group", "gusty", "light", "cloud", "love", "uppity", "current", "clocks", "download", "declare", "feel", "light", "sore", "scary", "teach", "fight", "hurt", "use", "expand", "number", "buzz", "ooze", "lame", "sniff", "sock", "nap", "shake", "breathe", "pollute", "approval", "home", "opine", "stride", "large", "hurry", "painful", "hesitant", "dizzy", "scorch", "magical", "harm", "unwieldy", "lavish", "door", "bustling", "silent", "straw", "blow", "stitch", "sincere", "obnoxious", "adjoining", "cake", "office", "wave", "puzzled", "scarce", "stale", "change", "quizzical", "bashful", "exist", "remarkable", "manager", "bereave", "fling", "fork", "grow", "pain", "bizarre", "hot", "recur", "cat", "spy", "shock", "escape", "leaf", "blur", "dinosaur", "visitor", "body", "clever", "nut", "beetle", "shrill", "faint", "stretch", "clumsy", "jagged", "plucky", "concerned", "juvenile", "ablaze", "sudden", "shade", "read", "wicked", "dreary", "passenger", "consecrate", "moan", "voiceless", "pleasant", "paint", "oe", "slimy", "imply", "optimize", "juicy", "overt", "scab", "volleyball", "knowledge", "dip", "typeset", "screw", "whole", "contract", "rest", "attack", "territory", "furry", "curve", "absorbed", "nation", "unsightly", "elbow", "scatter", "act", "wry", "acoustic", "vacation", "parallel", "judge", "own", "yawn", "brick", "stove", "slippery", "afternoon", "flop", "overconfident", "abandoned", "submit", "adaptable", "kick", "activity", "ill-informed", "hobbies", "place", "grab", "consult", "saddle", "holiday", "wish", "popcorn", "idealize", "careless", "healthy", "spicy", "direct"];
 
-    let currentWord = "";
+    let lines = [];
+    let lineLength = 40;
+    let lineCount = 3;
+    let lineHeight = 50;
     let currentTyped = "";
     let currentIndex = 0;
     let startTime;
@@ -32,23 +35,42 @@
 
     function setup() {
       createCanvas(windowWidth, windowHeight);
-      textAlign(LEFT, TOP);
+      textAlign(CENTER, CENTER);
       textSize(24);
+      generateLines();
       startGame();
     }
 
+    function generateLines() {
+      for (let i = 0; i < lineCount; i++) {
+        let line = "";
+        let remainingLength = lineLength;
+        while (remainingLength > 0) {
+          let word = random(words);
+          if (word.length <= remainingLength) {
+            line += word + " ";
+            remainingLength -= word.length + 1; // Add 1 for space between words
+          } else {
+            break;
+          }
+        }
+        lines.push(line.trim());
+      }
+    }
+
     function startGame() {
-      currentWord = random(words);
       startTime = millis();
       timerInterval = setInterval(updateTimer, 1000);
     }
 
     function draw() {
       background(34);
-      fill(221);
-      text(currentWord, 20, 50);
+      for (let i = 0; i < lines.length; i++) {
+        fill(221);
+        text(lines[i], width / 2, height / 2 - lineHeight * (lineCount - i - 1));
+      }
       fill(255);
-      text(currentTyped, 20, 90);
+      text(currentTyped.toLowerCase(), width / 2, height / 2 + lineHeight);
 
       if (!gameOver) {
         let timeText = "Time: " + timeLeft;
@@ -60,6 +82,10 @@
         text("Game Over!", width - 200, 20);
         fill(255);
         text(stats, width - 200, 50);
+        if (keyCode === ENTER) {
+          gameOver = false;
+          resetGame();
+        }
       }
     }
 
@@ -78,20 +104,15 @@
           currentTyped = currentTyped.slice(0, -1);
         } else if (keyCode >= 65 && keyCode <= 90 || keyCode === 32) {
           let typedChar = keyCode === 32 ? " " : String.fromCharCode(keyCode);
-          currentTyped += typedChar;
+          currentTyped += typedChar.toLowerCase();
         }
 
-        if (currentTyped === currentWord.substring(0, currentTyped.length)) {
-          if (currentTyped.length === currentWord.length) {
+        if (lines[currentIndex].startsWith(currentTyped)) {
+          if (lines[currentIndex].length === currentTyped.length) {
             correctCount++;
-            currentIndex++;
-            if (currentIndex >= words.length) {
-              gameOver = true;
-              calculateStats();
-            } else {
-              currentWord = words[currentIndex];
-              currentTyped = "";
-            }
+            lines.splice(currentIndex, 1);
+            generateLines();
+            currentTyped = "";
           }
         } else {
           wrongCount++;
@@ -104,6 +125,19 @@
       let elapsedTime = 60 - timeLeft;
       typingSpeed = Math.floor((typedCharacters / elapsedTime) * 60);
       accuracy = Math.floor((correctCount / typedCharacters) * 100);
+    }
+
+    function resetGame() {
+      lines = [];
+      currentTyped = "";
+      correctCount = 0;
+      wrongCount = 0;
+      typingSpeed = 0;
+      accuracy = 0;
+      timeLeft = 60;
+      currentIndex = 0;
+      generateLines();
+      startGame();
     }
   </script>
 </body>
