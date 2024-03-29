@@ -1,0 +1,104 @@
+let bgColor = 220;
+let backgroundSlider;
+let textColor = 0;
+let keyMappings = ['', '', '', '', '', '', '', ''];
+
+function setup() {
+  createCanvas(1920, 1080);
+
+  let homeButton = createButton('Home');
+  homeButton.position(0, 0);
+  homeButton.size(100, 100);
+  homeButton.style('background-color', bgColor);
+
+  let settingsBanner = createElement('h1', 'Settings');
+  settingsBanner.position(800, -50);
+  settingsBanner.style('font-family', 'Arial');
+  settingsBanner.style('font-size', '80px');
+
+  let generalBanner = createElement('h2', 'General');
+  generalBanner.position(480, 100);
+  generalBanner.style('font-family', 'Arial');
+  generalBanner.style('font-size', '40px');
+
+  let hotkeysBanner = createElement('h2', 'Hotkeys');
+  hotkeysBanner.position(1440, 100);
+  hotkeysBanner.style('font-family', 'Arial');
+  hotkeysBanner.style('font-size', '40px');
+
+  stroke(0);
+  strokeWeight(2);
+  line(0, 100, width, 100);
+  line(width / 2, 100, width / 2, height);
+  line(0, 200, width, 200);
+  line(100, 0, 100, 100);
+
+  let backgroundText = createElement('p', 'Background Color');
+  backgroundText.position(20, 300);
+  backgroundText.style('font-family', 'Arial');
+  backgroundText.style('font-size', '18px');
+
+  backgroundSlider = createSlider(100, 200, bgColor);
+  backgroundSlider.position(200, 320);
+  backgroundSlider.style('width', '500px');
+
+  let keyLabels = ['Key#1', 'Key#2', 'Key#3', 'Key#4', 'Key#5', 'Key#6', 'Key#7', 'Key#8'];
+  let numberButtons = [];
+  for (let i = 0; i < keyLabels.length; i++) {
+    let label = createElement('p', keyLabels[i]);
+    label.position(1200, 200 + i * 50);
+    label.style('font-family', 'Arial');
+    label.style('font-size', '24px');
+
+    let numberButton = createButton(i + 1);
+    numberButton.position(1420, 215 + i * 50);
+    numberButton.size(30, 30);
+    numberButton.style('font-size', '24px');
+    numberButton.mousePressed(() => {
+      displayPressAnyKey(label, numberButton, i);
+    });
+    numberButtons.push(numberButton);
+
+
+    let initialText = createElement('p', '');
+    initialText.position(1460, 200 + i * 50);
+    initialText.style('font-family', 'Arial');
+    initialText.style('font-size', '18px');
+    initialText.style('white-space', 'nowrap'); 
+    initialText.html('[Press Any Key]');
+  }
+}
+
+function draw() {
+  let backgroundBrightness = backgroundSlider.value();
+  bgColor = color(backgroundBrightness);
+  background(bgColor);
+  
+  stroke(0);
+  strokeWeight(2);
+  line(0, 100, width, 100);
+  line(width / 2, 100, width / 2, height);
+  line(0, 200, width, 200);
+  line(100, 0, 100, 100);
+
+  fill(textColor);
+}
+
+function displayPressAnyKey(label, numberButton, index) {
+  let initialText = select('p:nth-child(' + (index * 2 + 2) + ')');
+  let number = index + 1;
+  numberButton.html(number + ' [Press Any Key]');
+  document.addEventListener('keydown', function(event) {
+    let key = event.key;
+    let existingIndex = keyMappings.indexOf(key);
+    if (existingIndex !== -1 && existingIndex !== index) {
+      keyMappings[existingIndex] = ''; 
+      let existingButton = document.getElementById('numberButton' + existingIndex);
+      if (existingButton) {
+        existingButton.html(existingIndex + 1 + ' [NOT SET]');
+      }
+    }
+    keyMappings[index] = key;
+    numberButton.html(number + ' ' + key);
+  }, { once: true }); 
+}
