@@ -17,37 +17,56 @@ for (let i = shapeTypes.length - 1; i > 0; i--) {
   [shapeTypes[i], shapeTypes[j]] = [shapeTypes[j], shapeTypes[i]];
 }
 
-// Setup function
 function setup() {
-  createCanvas(600, 400);
+  createCanvas(800, 500);
 
+  // Initial vertical starting point and vertical gap for the red shapes
+  const startY = 100; // Starting y position for the red shapes
+  const redGap = 100; // Vertical gap between the red shapes
+
+  // Shuffle and assign shape types to red shapes
+  shuffle(shapeTypes, true);
   for (let i = 0; i < shapeTypes.length; i++) {
     let x, y;
     if (i < shapeTypes.length / 2) {
-      x = 13;
-      y = 60 + (i % (shapeTypes.length / 2)) * 100;
+      x = 13; // Left side shapes
+      y = startY + (i % (shapeTypes.length / 2)) * redGap;
     } else {
-      x = width - 63;
-      y = 60 + (i % (shapeTypes.length / 2)) * 100;
+      x = width - 88; // Adjusted position for right side shapes
+      y = startY + (i % (shapeTypes.length / 2)) * redGap;
     }
     let shapeID = i;
     shapes.push({shapeID, x, y, size: 50, colorShape: "red", isDragging: false, offsetX: 0, offsetY: 0, shapeType: shapeTypes[i]});
   }
 
-  for (let i = 0; i < 3; i++) {
-    const xTop = (width / 4) * (i + 1) - 25;
-    const yTop = height / 4 - 25;
+  const graySize = 50; // Size of each gray shape
+  const grayGap = 100; // Desired horizontal gap between gray shapes
+  const totalGrayWidth = 3 * graySize + 2 * grayGap;
+  const startX = (width - totalGrayWidth) / 2; // Centering gray shapes
+
+  // Assign shapes to gray shapes top and bottom rows
+  // First, split the shapeTypes into two groups for top and bottom rows
+  let topShapes = shapeTypes.slice(0, 3);
+  let bottomShapes = shapeTypes.slice(3, 6);
+
+  // Place top row shapes
+  for (let i = 0; i < topShapes.length; i++) {
+    const xTop = startX + i * (graySize + grayGap);
+    const yTop = height / 4 - 25; // Position on the top third of the screen
     let shapeID = i;
-    grayShapesTop.push({shapeID, x: xTop, y: yTop, size: 50, colorShape: 200, isDragging: false, isFrozen: false, shapeType: shapeTypes[i]});
+    grayShapesTop.push({shapeID, x: xTop, y: yTop, size: 50, colorShape: 200, isDragging: false, isFrozen: false, shapeType: topShapes[i]});
   }
 
-  for (let i = 3; i < 6; i++) {
-    const xBottom = (width / 4) * (i - 2) - 25;
-    const yBottom = (height / 4) * 3 - 25;
+  // Place bottom row shapes
+  for (let i = 0; i < bottomShapes.length; i++) {
+    const xBottom = startX + i * (graySize + grayGap);
+    const yBottom = 2 * height / 3 - 25; // Position on the bottom third of the screen
     let shapeID = i;
-    grayShapesBottom.push({shapeID, x: xBottom, y: yBottom, size: 50, colorShape: 200, isDragging: false, isFrozen: false, shapeType: shapeTypes[i]});
+    grayShapesBottom.push({shapeID, x: xBottom, y: yBottom, size: 50, colorShape: 200, isDragging: false, isFrozen: false, shapeType: bottomShapes[i]});
   }
 }
+
+
 
 function draw() {
   if (!gameStarted) {
@@ -60,16 +79,16 @@ function draw() {
     text('Start', width / 2, height / 2);
   } else {
     background(220);
-    line(75, 0, 75, 400);
-    line(75, 35, 0, 35);
-    line(75, 135, 0, 135);
-    line(75, 235, 0, 235);
-    line(75, 335, 0, 335);
-    line(525, 0, 525, 400);
-    line(525, 35, 600, 35);
-    line(525, 135, 600, 135);
-    line(525, 235, 600, 235);
-    line(525, 335, 600, 335);
+    line(125, 0, 125, 500);
+    line(125, 75, 0, 75);
+    line(125, 175, 0, 175);
+    line(125, 275, 0, 275);
+    line(125, 375, 0, 375);
+    line(675, 0, 675, 500);
+    line(675, 75, 800, 75);
+    line(675, 175, 800, 175);
+    line(675, 275, 800, 275);
+    line(675, 375, 800, 375);
 
     for (let i = 0; i < grayShapesTop.length; i++) {
       let grayShape = grayShapesTop[i];
@@ -162,23 +181,27 @@ function mouseReleased() {
     let shape = shapes[i];
     if (shape.isDragging) {
       let correspondingGrayShape;
+      
+      // Check if the shape is in the top or bottom third of the canvas
       if (shape.y < height / 2) {
-        correspondingGrayShape = grayShapesTop.find(grayShape => grayShape.shapeID === shape.shapeID);
+        correspondingGrayShape = grayShapesTop.find(grayShape => grayShape.shapeType === shape.shapeType);
       } else {
-        correspondingGrayShape = grayShapesBottom.find(grayShape=> grayShape.shapeID === shape.shapeID);
+        correspondingGrayShape = grayShapesBottom.find(grayShape => grayShape.shapeType === shape.shapeType);
       }
-      if (correspondingGrayShape) {
-        if (abs(shape.x - correspondingGrayShape.x) < 5 && abs(shape.y - correspondingGrayShape.y) < 5) {
-          shape.x = correspondingGrayShape.x;
-          shape.y = correspondingGrayShape.y;
-          shape.isFrozen = true;
-          shape.colorShape = "green";
-        }
+      
+      // Check for proximity and if matched, freeze and change color
+      if (correspondingGrayShape && Math.abs(shape.x - correspondingGrayShape.x) < 5 && Math.abs(shape.y - correspondingGrayShape.y) < 5) {
+        shape.x = correspondingGrayShape.x;
+        shape.y = correspondingGrayShape.y;
+        shape.isFrozen = true;
+        shape.colorShape = "green";
       }
+
       shape.isDragging = false;
     }
   }
 }
+
 
 // Function to draw shapes based on type
 function drawShape(shape) {
