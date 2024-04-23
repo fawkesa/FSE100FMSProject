@@ -1,0 +1,17 @@
+function mouseDragged() {
+  switch (currentActivity) {
+    case 4:
+      game4MouseDragged();
+      break;
+    // Add more cases as needed for other games
+  }
+}
+
+function mouseReleased() {
+  switch (currentActivity) {
+    case 4:
+      game4MouseReleased();
+      break;
+    // Add more cases as needed for other games
+  }
+}
