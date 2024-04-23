@@ -113,3 +113,15 @@ function mousePressed(){
       break;
   }
 }
+
+function keyPressed(){
+  switch(currentActivity){
+    case 2:
+      game2KeyPressed();
+      break;
+    case 3: 
+      game3KeyPressed();
+      break;
+  }
+  
+}
