@@ -46,8 +46,6 @@ function game2Setup(){
   game3Button.hide();
   game4Button.hide();
   game5Button.hide();
-  settingsButton.hide();
-  profileButton.hide();
     
   createCanvas(800, 500);
   textAlign(LEFT, CENTER);
