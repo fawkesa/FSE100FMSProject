@@ -105,9 +105,6 @@ function mousePressed(){
   // Only game 4 uses the mousePressed function, but the switch statement
   // makes it easy to add the mousePressed functionality for other games.
   switch(currentActivity){
-    case 2: 
-      game2MousePressed();
-      break;
     case 4: 
       game4MousePressed();
       break;
